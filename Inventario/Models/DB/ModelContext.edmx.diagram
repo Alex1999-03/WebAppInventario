@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="9cc804c43ebe442ebce1e781fd3b767b" Name="Diagram1">
+        <EntityTypeShape EntityType="PulperiaDBModel.Categorias" Width="1.5" PointX="8.875" PointY="3.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="PulperiaDBModel.Clientes" Width="1.5" PointX="0.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="PulperiaDBModel.Compras" Width="1.5" PointX="2.75" PointY="6.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="PulperiaDBModel.DetalleCompras" Width="1.5" PointX="5" PointY="7" IsExpanded="true" />
+        <EntityTypeShape EntityType="PulperiaDBModel.DetalleVentas" Width="1.5" PointX="5.375" PointY="0.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="PulperiaDBModel.Productos" Width="1.5" PointX="6.75" PointY="4" IsExpanded="true" />
+        <EntityTypeShape EntityType="PulperiaDBModel.Proveedores" Width="1.5" PointX="0.75" PointY="6.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="PulperiaDBModel.TipoPagos" Width="1.5" PointX="0.875" PointY="3.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="PulperiaDBModel.TipoVentas" Width="1.5" PointX="4.375" PointY="4.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="PulperiaDBModel.UnidadMedidas" Width="1.5" PointX="8.75" PointY="6" IsExpanded="true" />
+        <EntityTypeShape EntityType="PulperiaDBModel.Ventas" Width="1.5" PointX="3.125" PointY="0.5" IsExpanded="true" />
+        <AssociationConnector Association="PulperiaDBModel.FK_dbo_Productos_dbo_Categorias_CategoriaId" ManuallyRouted="false" />
+        <AssociationConnector Association="PulperiaDBModel.FK_dbo_Ventas_dbo_Clientes_ClienteId" ManuallyRouted="false" />
+        <AssociationConnector Association="PulperiaDBModel.FK_dbo_Compras_dbo_Proveedores_ProveedorId" ManuallyRouted="false" />
+        <AssociationConnector Association="PulperiaDBModel.FK_dbo_DetalleCompras_dbo_Compras_CompraId" ManuallyRouted="false" />
+        <AssociationConnector Association="PulperiaDBModel.FK_dbo_DetalleCompras_dbo_Productos_ProductoId" ManuallyRouted="false" />
+        <AssociationConnector Association="PulperiaDBModel.FK_dbo_DetalleVentas_dbo_Productos_ProductoId" ManuallyRouted="false" />
+        <AssociationConnector Association="PulperiaDBModel.FK_dbo_DetalleVentas_dbo_Ventas_VentaId" ManuallyRouted="false" />
+        <AssociationConnector Association="PulperiaDBModel.FK_dbo_Productos_dbo_UnidadMedidas_UnidadMedidaId" ManuallyRouted="false" />
+        <AssociationConnector Association="PulperiaDBModel.FK_dbo_Ventas_dbo_TipoPagos_TipoPagoId" ManuallyRouted="false" />
+        <AssociationConnector Association="PulperiaDBModel.FK_dbo_Ventas_dbo_TipoVentas_TipoVentaId" ManuallyRouted="false" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>
