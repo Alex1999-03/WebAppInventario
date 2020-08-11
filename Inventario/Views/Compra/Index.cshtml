@@ -1,0 +1,245 @@
+﻿@model List<Inventario.Models.ViewModel.CompraViewModel>
+
+@{
+    ViewBag.Title = "Lista De Compras";
+}
+
+<h1>@ViewBag.Title</h1>
+
+<div class="btn btn-primary pull-right" style="margin-right:10px" onclick="AgregarCompra()">Nueva Compra</div>
+
+@foreach(var compra in Model)
+{
+    
+<div class="col-md-12">
+
+    <table class="table table-striped table-responsive" style="margin-bottom:0">
+        <thead>
+            <tr>
+                <th>Codigo compra</th>
+                <th>Descripción</th>
+                <th>Fecha de compra</th>
+                <th>Nombre del proveedor</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>@compra.CodigoCompra</td>
+                <td>@compra.DescrpCompra</td>
+                <td>@compra.FechaCompra</td>
+                <td>@compra.NomProveedor</td>
+                <td><div class="btn btn-success btn-sm glyphicon glyphicon-edit" id="EditarCompra" onclick="EditarCompra(@compra.Id)"></div></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <table class="table table-striped table-responsive table-condensed" style="margin-bottom:100px;">
+        <thead>
+            <tr>
+                <th>Producto</th>
+                <th>Fecha Vencimiento</th>
+                <th>Cantidad</th>
+                <th>Precio</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var detalle in compra.DetalleCompras)
+            {
+                <tr>
+                    <td>@detalle.Productos.DescrpProducto</td>
+                    <td>@detalle.FechaVencim</td>
+                    <td>@detalle.Cantidad</td>
+                    <td>@detalle.PrecioCompra</td>
+                    <td><div class="btn btn-success btn-sm glyphicon glyphicon-edit" id="EditarDetalle" onclick="EditarDetalle(@detalle.Id)"></div></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    
+</div>
+<div><span class="pull-right" style="margin-right:100px;font-size:large;"><strong>Total Compra: </strong>@compra.TotalCompra</span></div>
+}
+
+@Html.Partial("CompraModal")
+
+@section scripts{
+    
+   <script>
+       
+       var totalCompra;
+       function AgregarCompra() {
+           $("#NewCompraModal").modal();
+           totalCompra = 0;
+       }
+
+       $("#AddToList").click(function (e) {
+
+           e.preventDefault();
+
+           if ($.trim($("#Producto").val()) == "" || $.trim($("#CodigoDetalle").val()) == ""
+               || $.trim($("#FechaVencim").val()) == "" || $.trim($("#Cantidad").val()) == "" || $.trim($("#PrecioCompra").val()) == "") return;
+
+           var producto = $("#Producto").val(),
+               productoId = $("#ProductoId").val(),
+               codigo = $("#CodigoDetalle").val(),
+               fechaVen = $("#FechaVencim").val(),
+               cantidad = $("#Cantidad").val(),
+               precioCompra = $("#PrecioCompra").val(),
+               tablaDetalles = $("#TablaDetalles tbody");
+               total = (parseFloat(precioCompra) * parseInt(cantidad))
+         
+
+           var DetalleItem = '<tr><td>' + codigo + '</td><td style="display:none;">' + productoId + '</td><td>' + producto + '</td><td>' + fechaVen + '</td><td>' +
+               parseInt(cantidad) + '</td><td>' + parseFloat(precioCompra) + '</td><td>' + total +
+               '</td><td><a data-itemId="0" href="#" class="deleteItem">Remove</a></td></tr>';
+
+
+           totalCompra += total
+           console.log(totalCompra)
+           $("#TotalCompra").val(totalCompra)
+           $("#TotalCompra").html("<strong>Compra Total: </strong>" + totalCompra)
+
+           tablaDetalles.append(DetalleItem);
+
+           ClearItem();
+       });
+
+       function ClearItem() {
+           $("#Producto").val(''),
+               $("#CodigoDetalle").val(''),
+               $("#FechaVencim").val(''),
+               $("#Cantidad").val(''),
+               $("#PrecioCompra").val('');
+
+       }
+
+       $(document).on('click', 'a.deleteItem', function (e) {
+           e.preventDefault();
+           var $self = $(this);
+           if ($(this).attr('data-ItemId') == "0") {
+               $(this).parents('tr').css("background-color", "#ff6347").fadeOut(800, function () {
+                   $(this).remove();
+               });
+           }
+       });
+
+       $("#GuardarCompra").click(function (e) {
+           e.preventDefault();
+
+          var detalleArr = []
+          $.each($("#TablaDetalles tbody tr"), function () {
+               detalleArr.push({
+                   Cantidad: $(this).find('td:eq(4)').html(),
+                   PrecioCompra: $(this).find('td:eq(5)').html(),
+                   FechaVencim: $(this).find('td:eq(3)').html(),
+                   CodigoDetalle: $(this).find('td:eq(0)').html(),
+                   ProductoId: $(this).find('td:eq(1)').html()
+               });
+           });
+
+           console.log(detalleArr)
+
+           var data = {
+               CodigoCompra: $("#CodigoCompra").val(),
+               TotalCompra: $("#TotalCompra").val(),
+               DescrpCompra: $("#DescrpCompra").val(),
+               ProveedorId: $("#ProveedorId").val(),
+               DetalleCompras: detalleArr
+           }
+           console.log(data)
+           Save(data)
+       })
+
+       function Save(data) {
+           var url = "@Url.Content("~/Compra/SaveCompra")"
+
+           fetch(url, {
+               method: 'POST',
+               body: JSON.stringify(data),
+               headers: {
+                   'Accept': 'application/json',
+                   'Content-Type': 'application/json'
+               }
+           }).then(function (response) {
+               if (response.ok)
+                   return response.text();
+               else
+                       alert("Error!!!");
+               }).then(function (data) {
+                   if (data != "1")
+                       alert(data)
+                   else
+                       document.location.reload();
+               })
+       }
+
+       $(function () {
+
+           $("#Producto").autocomplete({
+               dataType: 'JSON',
+               source: function (request, response) {
+                   jQuery.ajax({
+                       url: '/Compra/GetAutocompleteProductos',
+                       type: 'POST',
+                       dataType: 'JSON',
+                       data: {
+                           nombre: request.term
+                       },
+                       success: function (data) {
+                           response($.map(data, function (item) {
+
+                               return {
+                                   id: item.Id,
+                                   value: item.DescrpProducto,
+                                   precio: item.Precio
+                               }
+                           }))
+                       }
+                   })
+               },
+               select: function (e, ui) {
+                   e.preventDefault()
+                   $("#ProductoId").val(ui.item.id)
+                   $("#Producto").val(ui.item.value)
+                   $("#PrecioCompra").val(ui.item.precio)
+               }
+           })
+
+           $("#Proveedor").autocomplete({
+               dataType: 'JSON',
+               source: function (request, response) {
+                   jQuery.ajax({
+                       url: '/Compra/GetAutocompleteProveedor',
+                       type: 'POST',
+                       dataType: 'JSON',
+                       data: {
+                           nombre: request.term
+                       },
+                       success: function (data) {
+                           response($.map(data, function (item) {
+
+                               
+                               return {
+                                   id: item.Id,
+                                   value: item.NomProveedor,
+                                   
+                               }
+                               
+                           }))
+                          
+                       }
+                   })
+               },
+               select: function (e, ui) {
+                   e.preventDefault();
+                   $("#ProveedorId").val(ui.item.id);
+                   $("#Proveedor").val(ui.item.value);
+                   
+               }
+           })
+
+       })
+
+    </script>
+    
+    }

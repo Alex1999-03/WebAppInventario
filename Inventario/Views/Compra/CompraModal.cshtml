@@ -1,0 +1,95 @@
+﻿@*Ventana modal para el detalle*@
+<div class="modal fade" id="NewCompraModal">
+    <div class="modal-dialog modal-lg" style="width: 900px !important;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <a href="#" class="close" data-dismiss="modal">&times;</a>
+                <h4>Agregar Nuevo Detalle</h4>
+            </div>
+            <form id="NewDetalleForm">
+                <div class="modal-body">
+                    @*Compra*@
+                    <h5 style="color:#ff6347">Compra</h5>
+                    <hr />
+                    <div class="form-horizontal">
+                        <input type="hidden" id="CompraId" />
+                        <div class="form-group">
+                            <label class="control-label col-md-2">Codigo Compra</label>
+                            <div class="col-md-4">
+                                <input type="text" id="CodigoCompra" name="CodigoCompra" placeholder="CodigoCompra" class="form-control" />
+                            </div>
+                            <label class="control-label col-md-2">Descripción</label>
+                            <div class="col-md-4">
+                                <input type="text" id="DescrpCompra" name="DescrpCompra" placeholder="Descripcion" class="form-control" />
+                            </div>
+                            <label class="control-label col-md-2">Proveedor</label>
+                            <div class="col-md-4">
+                                <input type="hidden" id="ProveedorId" />
+                                <input type="text" id="Proveedor" name="Proveedor" placeholder="Nombre Del Proveedor" class="form-control" />
+                            </div>
+                        </div>
+                    </div>
+
+                    @*Detalle Compra*@
+                    <h5 style="margin-top:10px;color:#ff6347;">Detalle</h5>
+                    <hr />
+                    <div class="form-horizontal">
+                        <input type="hidden" id="DetalleCompraId" />
+                        <div class="form-group">
+
+                            <label class="control-label col-md-2">Codigo Detalle</label>
+                            <div class="col-md-4">
+                                <input type="text" id="CodigoDetalle" name="CodigoDetalle" placeholder="Codigo Del Detalle" class="form-control" />
+                            </div>
+                            <label class="control-label col-md-2">Producto</label>
+                            <div class="col-md-4">
+                                <input type="hidden" id="ProductoId" />
+                                <input type="text" id="Producto" name="Producto" placeholder="Producto" class="form-control" />
+                            </div>
+                            <label class="control-label col-md-2">Fecha De Vencimiento</label>
+                            <div class="col-md-4">
+                                <input type="date" id="FechaVencim" name="FechaVencim" class="form-control" />
+                            </div>
+                            <label class="control-label col-md-2">Cantidad</label>
+                            <div class="col-md-4">
+                                <input type="number" id="Cantidad" name="Cantidad" placeholder="Cantidad" class="form-control" />
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label col-md-2 pt-4">Precio</label>
+
+                            <div class="col-md-4">
+                                <input type="number" id="PrecioCompra" name="PrecioCompra" placeholder="Precio De Compra" class="form-control" />
+                            </div>
+                            <div class="col-md-2 col-lg-offset-4">
+                                <a id="AddToList" class="btn btn-primary">Add To List</a>
+                            </div>
+                        </div>
+
+                        <table id="TablaDetalles" class="table">
+                            <thead>
+                                <tr>
+                                    <th>Codigo Detalle</th>
+                                    <th>Producto</th>
+                                    <th>Fecha De Vencimiento</th>
+                                    <th>Cantidad</th>
+                                    <th>Precio</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                        <span class="pull-right" style="margin-right:100px" id="TotalCompra"></span>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="reset" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+                    <button id="GuardarCompra" type="submit" class="btn btn-danger">Guardar Compra</button>
+                </div>
+            </form>
+        </div>
+
+    </div>
+
+</div>
