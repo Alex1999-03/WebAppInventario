@@ -1,0 +1,102 @@
+﻿@model Inventario.Models.ViewModel.CompraViewModel
+
+
+@{
+    Layout = null;
+}
+<div>
+    @using (Html.BeginForm())
+    {
+        @Html.HiddenFor(m => m.Id, new { @id = "Id" })
+
+        <div class="form-group">
+            <label for="exampleInputEmail1">Codigo de la compra</label>
+            @Html.TextBoxFor(model => model.CodigoCompra, new { @class = "form-control", @placeholder = "Nombre producto", @id = "CodigoCompraEdit" })
+        </div>
+        <div class="form-group">
+            <label for="exampleInputEmail1">Descripción de la compra </label>
+            @Html.TextBoxFor(model => model.DescrpCompra, new { autocomplete = "off", @class = "form-control", @placeholder = "Fecha de vencimiento", @id = "DescrpCompraEdit" })
+        </div>
+        <div class="form-group">
+            <label for="exampleInputEmail1">Fecha de la Compra</label>
+            @Html.TextBoxFor(model => model.FechaCompra, new { autocomplete = "off", @class = "form-control", @placeholder = "Cantidad", @id = "FechaCompraEdit" })
+        </div>
+        <div class="form-group">
+            <label for="exampleInputEmail1">Precio</label>
+            @Html.HiddenFor(m => m.ProveedorId, new { @id = "ProveedorIdEdit"})
+            @Html.TextBoxFor(model => model.NomProveedor, new { @class = "form-control", @placeholder = "Precio compra", @id = "NomProveedorEdit" })
+        </div>
+        <hr />
+        <input class="btn btn-success btn-block" value="Actualizar detalle" onclick="Actualizar()" />
+
+
+    }
+
+
+</div>
+
+<script>
+
+    function Actualizar() {
+        fetch("@Url.Content("~/Compra/EditarCompra")", {
+            method: 'POST',
+            body: JSON.stringify({
+                Id: document.getElementById("Id").value,
+                CodigoCompra: document.getElementById("CodigoCompraEdit").value,
+                DescrpCompra: document.getElementById("DescrpCompraEdit").value,
+                FechaCompra: document.getElementById("FechaCompraEdit").value,
+                ProveedorId: document.getElementById("ProveedorIdEdit").value
+            }),
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
+        }).then(function (response) {
+            if (response.ok)
+                return response.text();
+            else
+                    alert("Error!!!");
+            }).then(function (data) {
+
+                if (data != "1")
+                    alert(data)
+                else
+                    document.location.reload();
+            })
+    }
+
+    $(function () {
+
+        $("#NomProveedorEdit").autocomplete({
+            dataType: 'JSON',
+            source: function (request, response) {
+                jQuery.ajax({
+                    url: '/Compra/GetAutocompleteProveedor',
+                    type: 'POST',
+                    dataType: 'JSON',
+                    data: {
+                        nombre: request.term
+                    },
+                    success: function (data) {
+                        response($.map(data, function (item) {
+
+                            return {
+                                id: item.Id,
+                                value: item.NomProveedor,
+                                
+                            }
+                        }))
+                    }
+                })
+            },
+            select: function (e, ui) {
+                e.preventDefault()
+
+                $("#ProveedorIdEdit").val(ui.item.id)
+                $("#NomProveedorEdit").val(ui.item.value)
+                
+            }
+        })
+
+    })
+</script>

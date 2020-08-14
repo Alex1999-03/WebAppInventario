@@ -1,0 +1,101 @@
+﻿@model Inventario.Models.ViewModel.DetalleCompraViewModel
+
+@{ 
+    Layout = null;
+}
+<div>
+    @using (Html.BeginForm())
+    {
+        @Html.HiddenFor(m => m.Id, new { @id="Id"})
+
+        <div class="form-group">
+            <label for="exampleInputEmail1">Producto</label>
+            @Html.HiddenFor(model => model.ProductoId, new { @id = "ProductoIdEdit" })
+            @Html.TextBoxFor(model => model.Productos.DescrpProducto, new { @class = "form-control", @placeholder = "Nombre producto", @id = "ProductoNomEdit" })
+        </div>
+        <div class="form-group">
+            <label for="exampleInputEmail1">Fecha Vencimiento</label>
+            @Html.TextBoxFor(model => model.FechaVencim, new { autocomplete = "off", @class = "form-control", @placeholder = "Fecha de vencimiento", @id = "FechaVencimEdit" })
+        </div>
+        <div class="form-group">
+            <label for="exampleInputEmail1">Cantidad</label>
+            @Html.TextBoxFor(model => model.Cantidad, new { autocomplete = "off", @class = "form-control", @placeholder = "Cantidad", @id = "CantidadEdit" })
+        </div>
+        <div class="form-group">
+            <label for="exampleInputEmail1">Precio</label>
+            @Html.TextBoxFor(model => model.PrecioCompra, new { @class = "form-control", @placeholder = "Precio compra", @id = "PrecioEdit" })
+        </div>
+        <hr />
+        <input class="btn btn-success btn-block" value="Actualizar detalle" onclick="Actualizar()"/>
+
+
+    }
+
+
+</div>
+
+<script>
+
+    function Actualizar() {
+        fetch("@Url.Content("~/Compra/EditarDetalle")", {
+            method: 'POST',
+            body: JSON.stringify({
+                Id: document.getElementById("Id").value,
+                ProductoId: document.getElementById("ProductoIdEdit").value,
+                FechaVencim: document.getElementById("FechaVencimEdit").value,
+                Cantidad: document.getElementById("CantidadEdit").value,
+                PrecioCompra: document.getElementById("PrecioEdit").value
+            }),
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
+        }).then(function (response) {
+            if (response.ok)
+                return response.text();
+            else
+                    alert("Error!!!");
+            }).then(function (data) {
+
+                if (data != "1")
+                    alert(data)
+                else
+                    document.location.reload();
+            })
+    }
+
+    $(function () {
+        
+        $("#ProductoNomEdit").autocomplete({
+            dataType: 'JSON',
+            source: function (request, response) {
+                jQuery.ajax({
+                    url: '/Compra/GetAutocompleteProductos',
+                    type: 'POST',
+                    dataType: 'JSON',
+                    data: {
+                        nombre: request.term
+                    },
+                    success: function (data) {
+                        response($.map(data, function (item) {
+                            
+                            return {
+                                id: item.Id,
+                                value: item.DescrpProducto,
+                                precio: item.Precio
+                            }
+                        }))
+                    }
+                })
+            },
+            select: function (e, ui) {
+                e.preventDefault()
+                
+                $("#ProductoIdEdit").val(ui.item.id)
+                $("#ProductoNomEdit").val(ui.item.value)
+                $("#PrecioEdit").val(ui.item.precio)
+            }
+        })
+
+    })
+</script>

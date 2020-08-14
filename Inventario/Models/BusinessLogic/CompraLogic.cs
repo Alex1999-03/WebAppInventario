@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using Inventario.Models.ViewModel;
 using Inventario.Models.DB;
+using System.Data.Entity;
 
 namespace Inventario.Models.BusinessLogic
 {
@@ -42,6 +43,26 @@ namespace Inventario.Models.BusinessLogic
             }
         }
 
+        public CompraViewModel Get(int id)
+        {
+            CompraViewModel compra = new CompraViewModel();
+            using (var db = new PulperiaDBEntities())
+            {
+                compra = (from c in db.Compras
+                          where c.Id == id
+                          select new CompraViewModel
+                          {
+                              Id = c.Id,
+                              CodigoCompra = c.CodigoCompra,
+                              DescrpCompra = c.DescrpCompra,
+                              FechaCompra = c.FechaCompra,
+                              NomProveedor = c.Proveedores.NomProveedor,
+                              ProveedorId = c.ProveedorId
+                          }).FirstOrDefault();
+                return compra;
+            }
+        }
+
         public void Save(CompraViewModel model)
         {
             Compras compra = new Compras();
@@ -52,7 +73,6 @@ namespace Inventario.Models.BusinessLogic
                 compra.DescrpCompra = model.DescrpCompra;
                 compra.FechaCompra = DateTime.Now;
                 compra.ProveedorId = model.ProveedorId;
-                compra.TotalCompra = model.TotalCompra;
                 db.Compras.Add(compra);
                 db.SaveChanges();
                 foreach (var detalle in model.DetalleCompras)
@@ -65,7 +85,36 @@ namespace Inventario.Models.BusinessLogic
                     db.DetalleCompras.Add(detalleC);
                     db.SaveChanges();
                 }
+            }   
+        }
+
+        public void Edit(CompraViewModel model)
+        {
+            using(var db = new PulperiaDBEntities())
+            {
+                Compras compra = new Compras();
+                compra = db.Compras.Find(model.Id);
+                compra.CodigoCompra = model.CodigoCompra;
+                compra.DescrpCompra = model.DescrpCompra;
+                compra.FechaCompra = model.FechaCompra;
+                compra.ProveedorId = model.ProveedorId;
+                db.Entry(compra).State = EntityState.Modified;
+                db.SaveChanges();
             }
         }
+
+        public void ActualizarTotal(decimal total, int id)
+        {
+            
+            using (var db = new PulperiaDBEntities())
+            {
+                Compras model = db.Compras.Find(id);
+                model.TotalCompra = total;
+                db.Entry(model).State = EntityState.Modified;
+                
+            }
+        }
+
+        
     }
 }

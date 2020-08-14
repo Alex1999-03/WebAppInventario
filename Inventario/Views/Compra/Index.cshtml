@@ -8,9 +8,9 @@
 
 <div class="btn btn-primary pull-right" style="margin-right:10px" onclick="AgregarCompra()">Nueva Compra</div>
 
-@foreach(var compra in Model)
+@foreach (var compra in Model)
 {
-    
+
 <div class="col-md-12">
 
     <table class="table table-striped table-responsive" style="margin-bottom:0">
@@ -43,8 +43,11 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (var detalle in compra.DetalleCompras)
-            {
+                @{
+                   decimal total = 0;
+                }
+                @foreach (var detalle in compra.DetalleCompras)
+                {
                 <tr>
                     <td>@detalle.Productos.DescrpProducto</td>
                     <td>@detalle.FechaVencim</td>
@@ -52,20 +55,66 @@
                     <td>@detalle.PrecioCompra</td>
                     <td><div class="btn btn-success btn-sm glyphicon glyphicon-edit" id="EditarDetalle" onclick="EditarDetalle(@detalle.Id)"></div></td>
                 </tr>
-            }
+                    total += (detalle.Cantidad * detalle.PrecioCompra);
+                }
         </tbody>
     </table>
     
 </div>
-<div><span class="pull-right" style="margin-right:100px;font-size:large;"><strong>Total Compra: </strong>@compra.TotalCompra</span></div>
+<div><span class="pull-right" style="margin-right:100px;font-size:large;"><strong>Total Compra: @total</strong></span></div>
 }
 
-@Html.Partial("CompraModal")
+@Html.Partial("AgregarCompraModal")
+
+
+<div class="modal fade" id="CompraModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <a href="#" class="close" data-dismiss="modal">&times;</a>
+                <h3 class="modal-title">Editar Compra</h3>
+            </div>
+            <div class="modal-body" id="CompraModalBody">
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="DetalleCompraModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <a href="#" class="close" data-dismiss="modal">&times;</a>
+                <h3 class="modal-title">Editar Detalle</h3>
+            </div>
+            <div class="modal-body" id="DetalleModalBody">
+               
+
+            </div>
+        </div>
+    </div>
+</div>
 
 @section scripts{
     
    <script>
-       
+
+       EditarCompra = function (id) {
+           $("#CompraModalBody").load("/Compra/EditarCompra?id=" + id, function () {
+               $("#CompraModal").modal("show")
+           })
+       }
+
+        EditarDetalle = function(id) {
+           $("#DetalleModalBody").load("/Compra/EditarDetalle?id=" + id, function () {
+               $("#DetalleCompraModal").modal("show")
+           })
+          
+        }
+
        var totalCompra;
        function AgregarCompra() {
            $("#NewCompraModal").modal();
@@ -76,8 +125,7 @@
 
            e.preventDefault();
 
-           if ($.trim($("#Producto").val()) == "" || $.trim($("#CodigoDetalle").val()) == ""
-               || $.trim($("#FechaVencim").val()) == "" || $.trim($("#Cantidad").val()) == "" || $.trim($("#PrecioCompra").val()) == "") return;
+           if ($.trim($("#Producto").val()) == "" || $.trim($("#FechaVencim").val()) == "" || $.trim($("#Cantidad").val()) == "" || $.trim($("#PrecioCompra").val()) == "") return;
 
            var producto = $("#Producto").val(),
                productoId = $("#ProductoId").val(),
@@ -89,7 +137,7 @@
                total = (parseFloat(precioCompra) * parseInt(cantidad))
          
 
-           var DetalleItem = '<tr><td>' + codigo + '</td><td style="display:none;">' + productoId + '</td><td>' + producto + '</td><td>' + fechaVen + '</td><td>' +
+           var DetalleItem = '</td><td style="display:none;">' + productoId + '</td><td>' + producto + '</td><td>' + fechaVen + '</td><td>' +
                parseInt(cantidad) + '</td><td>' + parseFloat(precioCompra) + '</td><td>' + total +
                '</td><td><a data-itemId="0" href="#" class="deleteItem">Remove</a></td></tr>';
 
@@ -106,7 +154,6 @@
 
        function ClearItem() {
            $("#Producto").val(''),
-               $("#CodigoDetalle").val(''),
                $("#FechaVencim").val(''),
                $("#Cantidad").val(''),
                $("#PrecioCompra").val('');
@@ -129,11 +176,10 @@
           var detalleArr = []
           $.each($("#TablaDetalles tbody tr"), function () {
                detalleArr.push({
-                   Cantidad: $(this).find('td:eq(4)').html(),
-                   PrecioCompra: $(this).find('td:eq(5)').html(),
-                   FechaVencim: $(this).find('td:eq(3)').html(),
-                   CodigoDetalle: $(this).find('td:eq(0)').html(),
-                   ProductoId: $(this).find('td:eq(1)').html()
+                   Cantidad: $(this).find('td:eq(5)').html(),
+                   PrecioCompra: $(this).find('td:eq(4)').html(),
+                   FechaVencim: $(this).find('td:eq(2)').html(),
+                   ProductoId: $(this).find('td:eq(0)').html()
                });
            });
 
@@ -141,7 +187,6 @@
 
            var data = {
                CodigoCompra: $("#CodigoCompra").val(),
-               TotalCompra: $("#TotalCompra").val(),
                DescrpCompra: $("#DescrpCompra").val(),
                ProveedorId: $("#ProveedorId").val(),
                DetalleCompras: detalleArr
