@@ -1,0 +1,315 @@
+﻿@model List<Inventario.Models.ViewModel.VentaViewModel>
+
+@{
+    ViewBag.Title = "Lista de ventas";
+}
+
+<h2>@ViewBag.Title</h2>
+
+<div class="btn btn-primary pull-right" style="margin-right:10px" onclick="AgregarVenta()">Nueva Venta</div>
+
+@foreach (var venta in Model)
+{
+
+    <div class="col-md-12">
+
+        <table class="table table-striped table-responsive" style="margin-bottom:0">
+            <thead>
+                <tr>
+                    <th>Codigo venta</th>
+                    <th>Descripción</th>
+                    <th>Fecha de venta</th>
+                    <th>Nombre del cliente</th>
+                    <th>Tipo de pago</th>
+                    <th>Tipo de venta</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>@venta.CodigoVenta</td>
+                    <td>@venta.DescrpVenta</td>
+                    <td>@venta.FechaVenta</td>
+                    <td>@venta.NomCliente</td>
+                    <td>@venta.DescrpTipoPago</td>
+                    <td>@venta.DescrpTipoVenta</td>
+                    <td><div class="btn btn-success btn-sm glyphicon glyphicon-edit" id="EditarVenta" onclick="EditarVenta(@venta.Id)"></div></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <table class="table table-striped table-responsive table-condensed" style="margin-bottom:100px;">
+            <thead>
+                <tr>
+                    <th>Producto</th>
+                    <th>Cantidad</th>
+                    <th>Precio</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    decimal total = 0;
+                }
+                @foreach (var detalle in venta.DetalleVentas)
+                {
+                    <tr>
+                        <td>@detalle.Productos.DescrpProducto</td>
+                        <td>@detalle.Cantidad</td>
+                        <td>@detalle.PrecioVenta</td>
+                        <td><div class="btn btn-success btn-sm glyphicon glyphicon-edit" id="EditarDetalle" onclick="EditarDetalle(@detalle.Id)"></div></td>
+                    </tr>
+                    total += (detalle.Cantidad * detalle.PrecioVenta);
+                }
+            </tbody>
+        </table>
+
+    </div>
+    <div><span class="pull-right" style="margin-right:100px;font-size:large;"><strong>Total venta: @total</strong></span></div>
+}
+
+@Html.Partial("AgregarVentaModal")
+
+@section scripts{
+
+    <script>
+        var totalVenta;
+        function AgregarVenta() {
+            $("#NewVentaModal").modal();
+            totalVenta = 0;
+        }
+
+
+        $("#AddToList").click(function (e) {
+
+           e.preventDefault();
+
+           if ($.trim($("#Producto").val()) == "" || $.trim($("#Cantidad").val()) == "" || $.trim($("#PrecioVenta").val()) == "") return;
+
+           var producto = $("#Producto").val(),
+               productoId = $("#ProductoId").val(), 
+               cantidad = $("#Cantidad").val(),
+               precioCompra = $("#PrecioVenta").val(),
+               tablaDetalles = $("#TablaDetalles tbody");
+               total = (parseFloat(precioCompra) * parseInt(cantidad))
+         
+
+           var DetalleItem = '<tr><td style="display:none;">' + productoId + '</td><td>' + producto + '</td><td>' +
+               parseInt(cantidad) + '</td><td>' + parseFloat(precioCompra) + '</td><td>' + total +
+               '</td><td><a data-itemId="0" href="#" class="deleteItem">Remove</a></td></tr>';
+
+
+           totalVenta += total
+           console.log(totalVenta)
+           $("#TotalVenta").val(totalVenta)
+           $("#TotalVenta").html("<strong>Venta Total: </strong>" + totalVenta)
+
+           tablaDetalles.append(DetalleItem);
+
+           ClearItem();
+       });
+
+       function ClearItem() {
+           $("#Producto").val(''),
+               $("#Cantidad").val(''),
+               $("#PrecioVenta").val('');
+
+       }
+
+       $(document).on('click', 'a.deleteItem', function (e) {
+           e.preventDefault();
+           var $self = $(this);
+           if ($(this).attr('data-ItemId') == "0") {
+               $(this).parents('tr').css("background-color", "#ff6347").fadeOut(800, function () {
+                   $(this).remove();
+               });
+           }
+       });
+
+       $("#GuardarVenta").click(function (e) {
+           e.preventDefault();
+
+          var detalleArr = []
+          $.each($("#TablaDetalles tbody tr"), function () {
+               detalleArr.push({
+                   Cantidad: $(this).find('td:eq(2)').html(),
+                   PrecioVenta: $(this).find('td:eq(3)').html(),
+                   ProductoId: $(this).find('td:eq(0)').html()
+                   
+               });
+           });
+
+           console.log(detalleArr)
+
+           var data = {
+               CodigoVenta: $("#CodigoVenta").val(),
+               DescrpVenta: $("#DescrpVenta").val(),
+               ClienteId: $("#ClienteId").val(),
+               TipoPagoId: $("#TipoPagoId").val(),
+               TipoVentaId: $("#TipoVentaId").val(),
+               TotalVenta: $("#TotalVenta").val(),
+               DetalleVentas: detalleArr
+           }
+           console.log(data)
+           Save(data)
+       })
+
+        function Save(data) {
+            
+           var url = "@Url.Content("~/Venta/SaveVenta")"
+
+           fetch(url, {
+               method: 'POST',
+               body: JSON.stringify(data),
+               headers: {
+                   'Accept': 'application/json',
+                   'Content-Type': 'application/json'
+               }
+           }).then(function (response) {
+               if (response.ok)
+                   return response.text();
+               else
+                       alert("Error!!!");
+               }).then(function (data) {
+                   if (data != "1")
+                       alert(data)
+                   else
+                       document.location.reload();
+               })
+       }
+
+        $(function () {
+
+            $("#Producto").autocomplete({
+                dataType: 'JSON',
+                source: function (request, response) {
+                    jQuery.ajax({
+                        url: '/Venta/GetAutocompleteProductos',
+                        type: 'POST',
+                        dataType: 'JSON',
+                        data: {
+                            nombre: request.term
+                        },
+                        success: function (data) {
+                            response($.map(data, function (item) {
+
+                                return {
+                                    id: item.Id,
+                                    value: item.DescrpProducto,
+                                    precio: item.Precio
+                                }
+                            }))
+                        }
+                    })
+                },
+                select: function (e, ui) {
+                    e.preventDefault()
+                    $("#ProductoId").val(ui.item.id)
+                    $("#Producto").val(ui.item.value)
+                    $("#PrecioVenta").val(ui.item.precio)
+                }
+            })
+
+            $("#Cliente").autocomplete({
+                dataType: 'JSON',
+                source: function (request, response) {
+                    jQuery.ajax({
+                        url: '/Venta/GetAutocompleteClientes',
+                        type: 'POST',
+                        dataType: 'JSON',
+                        data: {
+                            nombre: request.term
+                        },
+                        success: function (data) {
+                            response($.map(data, function (item) {
+
+
+                                return {
+                                    id: item.Id,
+                                    value: item.NomCliente,
+
+                                }
+
+                            }))
+
+                        }
+                    })
+                },
+                select: function (e, ui) {
+                    e.preventDefault();
+                    $("#ClienteId").val(ui.item.id);
+                    $("#Cliente").val(ui.item.value);
+
+                }
+            })
+
+            $("#TipoPago").autocomplete({
+                dataType: 'JSON',
+                source: function (request, response) {
+                    jQuery.ajax({
+                        url: '/Venta/GetAutocompleteTipoPago',
+                        type: 'POST',
+                        dataType: 'JSON',
+                        data: {
+                            nombre: request.term
+                        },
+                        success: function (data) {
+                            response($.map(data, function (item) {
+
+
+                                return {
+                                    id: item.Id,
+                                    value: item.DescrpTipoPago,
+
+                                }
+
+                            }))
+
+                        }
+                    })
+                },
+                select: function (e, ui) {
+                    e.preventDefault();
+                    $("#TipoPagoId").val(ui.item.id);
+                    $("#TipoPago").val(ui.item.value);
+
+                }
+            })
+
+
+
+            $("#TipoVenta").autocomplete({
+                dataType: 'JSON',
+                source: function (request, response) {
+                    jQuery.ajax({
+                        url: '/Venta/GetAutocompleteTipoVenta',
+                        type: 'POST',
+                        dataType: 'JSON',
+                        data: {
+                            nombre: request.term
+                        },
+                        success: function (data) {
+                            response($.map(data, function (item) {
+
+
+                                return {
+                                    id: item.Id,
+                                    value: item.DescrpTipoventa,
+
+                                }
+
+                            }))
+
+                        }
+                    })
+                },
+                select: function (e, ui) {
+                    e.preventDefault();
+                    $("#TipoVentaId").val(ui.item.id);
+                    $("#TipoVenta").val(ui.item.value);
+
+                }
+            })
+
+        })
+    </script>
+
+}

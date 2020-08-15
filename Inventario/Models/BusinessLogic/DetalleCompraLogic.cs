@@ -5,7 +5,7 @@ using System.Web;
 using Inventario.Models.ViewModel;
 using Inventario.Models.DB;
 using System.Data.Entity;
-using Inventario.Models.BusinessLogic;
+
 
 namespace Inventario.Models.BusinessLogic
 {

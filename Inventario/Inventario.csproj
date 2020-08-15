@@ -130,13 +130,19 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\CompraController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\VentaController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\BusinessLogic\ClienteLogic.cs" />
     <Compile Include="Models\BusinessLogic\CompraLogic.cs" />
     <Compile Include="Models\BusinessLogic\DetalleCompraLogic.cs" />
+    <Compile Include="Models\BusinessLogic\DetalleVentaLogic.cs" />
     <Compile Include="Models\BusinessLogic\ProductoLogic.cs" />
     <Compile Include="Models\BusinessLogic\ProveedorLogic.cs" />
+    <Compile Include="Models\BusinessLogic\TipoPagoLogic.cs" />
+    <Compile Include="Models\BusinessLogic\TipoVentaLogic.cs" />
+    <Compile Include="Models\BusinessLogic\VentaLogic.cs" />
     <Compile Include="Models\DB\Categorias.cs">
       <DependentUpon>ModelContext.tt</DependentUpon>
     </Compile>
@@ -187,6 +193,8 @@
     </Compile>
     <Compile Include="Models\ViewModel\CompraViewModel.cs" />
     <Compile Include="Models\ViewModel\DetalleCompraViewModel.cs" />
+    <Compile Include="Models\ViewModel\DetalleVentaViewModel.cs" />
+    <Compile Include="Models\ViewModel\VentaViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -247,6 +255,8 @@
     <Content Include="Views\Compra\AgregarCompraModal.cshtml" />
     <Content Include="Views\Compra\EditarDetalle.cshtml" />
     <Content Include="Views\Compra\EditarCompra.cshtml" />
+    <Content Include="Views\Venta\Index.cshtml" />
+    <Content Include="Views\Venta\AgregarVentaModal.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
