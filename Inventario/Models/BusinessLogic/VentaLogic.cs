@@ -60,11 +60,11 @@ namespace Inventario.Models.BusinessLogic
                               DescrpVenta = v.DescrpVenta,
                               FechaVenta = v.FechaVenta,
                               TipoVentaId = v.TipoVentaId,
-                              DescrpTipoVenta = db.TipoVentas.Find(v.TipoVentaId).DescrpTipoventa,
+                              DescrpTipoVenta = db.TipoVentas.Where(x => x.Id == v.TipoVentaId).Select(x => x.DescrpTipoventa).FirstOrDefault(),
                               TipoPagoId = v.TipoPagoId,
-                              DescrpTipoPago = db.TipoPagos.Find(v.TipoPagoId).DescrpTipoPago,
+                              DescrpTipoPago = db.TipoPagos.Where(x => x.Id == v.TipoPagoId).Select(x => x.DescrpTipoPago).FirstOrDefault(),
                               ClienteId = v.ClienteId,
-                              NomCliente = db.Clientes.Find(v.ClienteId).NomCliente, 
+                              NomCliente = db.Clientes.Where(x => x.Id == v.ClienteId).Select(x => x.NomCliente).FirstOrDefault(), 
                           }).FirstOrDefault();
                 return venta;
             }
@@ -100,14 +100,15 @@ namespace Inventario.Models.BusinessLogic
         {
             using (var db = new PulperiaDBEntities())
             {
-                Ventas ventas = new Ventas();
-                ventas = db.Ventas.Find(model.Id);
-                ventas.CodigoVenta = model.CodigoVenta;
-                ventas.DescrpVenta = model.DescrpVenta;
-                ventas.FechaVenta = model.FechaVenta;
-                ventas.TipoPagoId = model.TipoPagoId;
-                ventas.TipoVentaId = model.TipoVentaId;
-                db.Entry(ventas).State = EntityState.Modified;
+                Ventas venta = new Ventas();
+                venta = db.Ventas.Find(model.Id);
+                venta.CodigoVenta = model.CodigoVenta;
+                venta.DescrpVenta = model.DescrpVenta;
+                venta.FechaVenta = model.FechaVenta;
+                venta.ClienteId = model.ClienteId;
+                venta.TipoPagoId = model.TipoPagoId;
+                venta.TipoVentaId = model.TipoVentaId;
+                db.Entry(venta).State = EntityState.Modified;
                 db.SaveChanges();
             }
         }

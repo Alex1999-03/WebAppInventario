@@ -14,8 +14,6 @@ namespace Inventario.Models.BusinessLogic
 
         public void Edit(DetalleVentaViewModel model)
         {
-
-
             using (var db = new PulperiaDBEntities())
             {
                 decimal total = 0;
@@ -23,7 +21,6 @@ namespace Inventario.Models.BusinessLogic
                 detalle.Cantidad = model.Cantidad;
                 detalle.PrecioVenta = model.PrecioVenta;
                 detalle.ProductoId = model.ProductoId;
-                detalle.VentaId = model.VentaId;
                 db.Entry(detalle).State = EntityState.Modified;
                 db.SaveChanges();
 

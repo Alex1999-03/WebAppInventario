@@ -1,0 +1,215 @@
+﻿@model Inventario.Models.ViewModel.VentaViewModel
+
+@{
+    Layout = null;
+}
+<div>
+    @using (Html.BeginForm())
+    {
+        @Html.HiddenFor(m => m.Id, new { @id = "Id" })
+
+        <div class="form-group">
+            <label for="exampleInputEmail1">Codigo de la venta</label>
+            @Html.TextBoxFor(model => model.CodigoVenta, new { @class = "form-control", @placeholder = "Codigo de la venta", @id = "CodigoVentaEdit" })
+        </div>
+        <div class="form-group">
+            <label for="exampleInputEmail1">Descripción de la venta </label>
+            @Html.TextBoxFor(model => model.DescrpVenta, new { autocomplete = "off", @class = "form-control", @placeholder = "Descripción de la venta", @id = "DescrpVentaEdit" })
+        </div>
+        <div class="form-group">
+            <label for="exampleInputEmail1">Fecha de la venta</label>
+            @Html.TextBoxFor(model => model.FechaVenta, new { autocomplete = "off", @class = "form-control", @placeholder = "Fecha de la venta", @id = "FechaVentaEdit" })
+        </div>
+        <div class="form-group">
+            <label for="exampleInputEmail1">Tipo de pago</label>
+            @Html.HiddenFor(m => m.TipoPagoId, new { @id = "TipoPagoIdEdit" })
+            @Html.TextBoxFor(model => model.DescrpTipoPago, new { autocomplete = "off", @class = "form-control", @placeholder = "Tipo de pago", @id = "TipoPagoEdit" })
+        </div>
+        <div class="form-group">
+            <label for="exampleInputEmail1">Tipo de venta</label>
+            @Html.HiddenFor(m => m.TipoVentaId, new { @id = "TipoVentaIdEdit" })
+            @Html.TextBoxFor(model => model.DescrpTipoVenta, new { autocomplete = "off", @class = "form-control", @placeholder = "Tipo de venta", @id = "TipoVentaEdit" })
+        </div>
+        <div class="form-group">
+            <label for="exampleInputEmail1">Precio</label>
+            @Html.HiddenFor(m => m.ClienteId, new { @id = "ClienteIdEdit" })
+            @Html.TextBoxFor(model => model.NomCliente, new { @class = "form-control", @placeholder = "Precio compra", @id = "NomClienteEdit" })
+        </div>
+        <hr />
+        <input class="btn btn-success btn-block" value="Actualizar Venta" onclick="Actualizar()" />
+
+
+    }
+</div>
+
+
+<script>
+
+    function Actualizar() {
+        
+        fetch("@Url.Content("~/Venta/EditarVenta")", {
+            method: 'POST',
+            body: JSON.stringify({
+                Id: document.getElementById("Id").value,
+                CodigoVenta: document.getElementById("CodigoVentaEdit").value,
+                DescrpVenta: document.getElementById("DescrpVentaEdit").value,
+                FechaVenta: document.getElementById("FechaVentaEdit").value,
+                ClienteId: document.getElementById("ClienteIdEdit").value,
+                TipoPagoId: document.getElementById("TipoPagoIdEdit").value,
+                TipoVentaId: document.getElementById("TipoVentaIdEdit").value
+            }),
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
+        }).then(function (response) {
+            if (response.ok)
+                return response.text();
+            else
+                    alert("Error!!!");
+            }).then(function (data) {
+
+                if (data != "1")
+                    alert(data)
+                else
+                    document.location.reload();
+            })
+    }
+
+    $(function () {
+
+        $("#NomClienteEdit").autocomplete({
+            dataType: 'JSON',
+            source: function (request, response) {
+                jQuery.ajax({
+                    url: '/Venta/GetAutocompleteCliente',
+                    type: 'POST',
+                    dataType: 'JSON',
+                    data: {
+                        nombre: request.term
+                    },
+                    success: function (data) {
+                        response($.map(data, function (item) {
+
+                            return {
+                                id: item.Id,
+                                value: item.NomCliente,
+
+                            }
+                        }))
+                    }
+                })
+            },
+            select: function (e, ui) {
+                e.preventDefault()
+
+                $("#ClienteIdEdit").val(ui.item.id)
+                $("#NomClienteEdit").val(ui.item.value)
+
+            }
+        })
+
+    })
+
+    $("#NomClienteEdit").autocomplete({
+        dataType: 'JSON',
+        source: function (request, response) {
+            jQuery.ajax({
+                url: '/Venta/GetAutocompleteClientes',
+                type: 'POST',
+                dataType: 'JSON',
+                data: {
+                    nombre: request.term
+                },
+                success: function (data) {
+                    response($.map(data, function (item) {
+
+
+                        return {
+                            id: item.Id,
+                            value: item.NomCliente,
+
+                        }
+
+                    }))
+
+                }
+            })
+        },
+        select: function (e, ui) {
+            e.preventDefault();
+            $("#ClienteIdEdit").val(ui.item.id);
+            $("#NomClienteEdit").val(ui.item.value);
+
+        }
+    })
+
+    $("#TipoPagoEdit").autocomplete({
+        dataType: 'JSON',
+        source: function (request, response) {
+            jQuery.ajax({
+                url: '/Venta/GetAutocompleteTipoPago',
+                type: 'POST',
+                dataType: 'JSON',
+                data: {
+                    nombre: request.term
+                },
+                success: function (data) {
+                    response($.map(data, function (item) {
+
+
+                        return {
+                            id: item.Id,
+                            value: item.DescrpTipoPago,
+
+                        }
+
+                    }))
+
+                }
+            })
+        },
+        select: function (e, ui) {
+            e.preventDefault();
+            $("#TipoPagoIdEdit").val(ui.item.id);
+            $("#TipoPagoEdit").val(ui.item.value);
+
+        }
+    })
+
+
+
+    $("#TipoVentaEdit").autocomplete({
+        dataType: 'JSON',
+        source: function (request, response) {
+            jQuery.ajax({
+                url: '/Venta/GetAutocompleteTipoVenta',
+                type: 'POST',
+                dataType: 'JSON',
+                data: {
+                    nombre: request.term
+                },
+                success: function (data) {
+                    response($.map(data, function (item) {
+
+
+                        return {
+                            id: item.Id,
+                            value: item.DescrpTipoventa,
+
+                        }
+
+                    }))
+
+                }
+            })
+        },
+        select: function (e, ui) {
+            e.preventDefault();
+            $("#TipoVentaIdEdit").val(ui.item.id);
+            $("#TipoVentaEdit").val(ui.item.value);
+
+        }
+    })
+
+</script>

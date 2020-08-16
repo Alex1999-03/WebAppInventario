@@ -68,9 +68,55 @@
 
 @Html.Partial("AgregarVentaModal")
 
+<div class="modal fade" id="VentaModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <a href="#" class="close" data-dismiss="modal">&times;</a>
+                    <h3 class="modal-title">Editar Venta</h3>
+                </div>
+                <div class="modal-body" id="VentaModalBody">
+
+
+                </div>
+            </div>
+        </div>
+</div>
+
+
+<div class="modal fade" id="DetalleVentaModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <a href="#" class="close" data-dismiss="modal">&times;</a>
+                    <h3 class="modal-title">Editar Detalle</h3>
+                </div>
+                <div class="modal-body" id="DetalleModalBody">
+
+
+                </div>
+            </div>
+        </div>
+</div>
+
+
+
 @section scripts{
 
     <script>
+        EditarDetalle = function (id) {
+            $("#DetalleModalBody").load("/Venta/EditarDetalle?id=" + id, function () {
+                $("#DetalleVentaModal").modal("show")
+            })
+
+        }
+
+        EditarVenta = function (id) {
+            $("#VentaModalBody").load("/Venta/EditarVenta?id=" + id, function () {
+                $("#VentaModal").modal("show")
+            })
+        }
+
         var totalVenta;
         function AgregarVenta() {
             $("#NewVentaModal").modal();

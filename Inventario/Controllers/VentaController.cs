@@ -12,6 +12,7 @@ namespace Inventario.Controllers
     public class VentaController : Controller
     {
         VentaLogic ventaL = new VentaLogic();
+        DetalleVentaLogic detalleL = new DetalleVentaLogic();
         ProductoLogic productoL = new ProductoLogic();
         ClienteLogic clientesL = new ClienteLogic();
         TipoPagoLogic tipoPagoL = new TipoPagoLogic();
@@ -69,6 +70,51 @@ namespace Inventario.Controllers
             }
 
         }
+
+
+        public ActionResult EditarVenta(int id)
+        {
+            return View(ventaL.Get(id));
+        }
+
+        [HttpPost]
+        public ActionResult EditarVenta(VentaViewModel model)
+        {
+            try
+            {
+                ventaL.Edit(model);
+                return Content("1");
+            }
+            catch (Exception ex)
+            {
+
+                ModelState.AddModelError("Hubo un error al editar la venta", ex);
+                return Content(ex.Message);
+            }
+        }
+
+
+        public ActionResult EditarDetalle(int id)
+        {
+            return View(detalleL.Get(id));
+        }
+
+        [HttpPost]
+        public ActionResult EditarDetalle(DetalleVentaViewModel model)
+        {
+            try
+            {
+                detalleL.Edit(model);
+                return Content("1");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("Hubo un error al editar el detalle. ", ex);
+                return Content(ex.Message);
+
+            }
+        }
+
 
     }
 }
